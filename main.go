@@ -3,7 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"strconv"
 )
+
+const emailUser = "me"
 
 func main() {
 	srv, err := getService()
@@ -11,17 +15,31 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	user := "me"
+	if len(os.Args) > 1 && os.Args[1] == "download" {
+		if len(os.Args) < 3 {
+			log.Fatalf("download command needs a email count")
+		}
+		emailDownloadCount, err := strconv.Atoi(os.Args[2])
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		err = downloadTestData(srv, emailDownloadCount)
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		return
+	}
+
 	// get first 10 messages
-	resp, err := srv.Users.Messages.List(user).MaxResults(10).Do()
+	resp, err := srv.Users.Messages.List(emailUser).MaxResults(10).Do()
 	if err != nil {
-		log.Fatalf("Unable to retrieve messages: %v", err)
+		log.Fatalf("unable to retrieve messages: %v", err)
 	}
 
 	for _, m := range resp.Messages {
-		msg, err := srv.Users.Messages.Get(user, m.Id).Format("full").Do()
+		msg, err := srv.Users.Messages.Get(emailUser, m.Id).Format("full").Do()
 		if err != nil {
-			fmt.Printf("Could not retrieve message. continuing... : %v", err)
+			fmt.Printf("could not retrieve message. continuing... : %v", err)
 			continue
 		}
 

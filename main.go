@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// get first 10 messages
-	resp, err := srv.Users.Messages.List(emailUser).MaxResults(100).Do()
+	resp, err := srv.Users.Messages.List(emailUser).MaxResults(10).Do()
 	if err != nil {
 		log.Fatalf("unable to retrieve messages: %v", err)
 	}

@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// get first 10 messages
-	resp, err := srv.Users.Messages.List(emailUser).MaxResults(10).Do()
+	resp, err := srv.Users.Messages.List(emailUser).MaxResults(100).Do()
 	if err != nil {
 		log.Fatalf("unable to retrieve messages: %v", err)
 	}
@@ -43,11 +43,19 @@ func main() {
 			continue
 		}
 
+		unsubUrl, err := scanUnsubUrls(srv, msg)
+		if err != nil {
+			fmt.Printf(err.Error())
+			continue
+		}
+		if (unsubUrl == "") {
+			continue
+		}
+
 		// print message headers
 		var subject string
 		var from string
 		var date string
-		var unsub string
 
 		for _, h := range msg.Payload.Headers {
 			switch h.Name {
@@ -57,15 +65,13 @@ func main() {
 				from = fmt.Sprint("From:", h.Value)
 			case "Date":
 				date = fmt.Sprint("Date:", h.Value)
-			case "List-Unsubscribe":
-				unsub = fmt.Sprint("Unsub:", h.Value)
 			}
 		}
 
 		fmt.Println(from)
 		fmt.Println(subject)
 		fmt.Println(date)
-		fmt.Println(unsub)
+		fmt.Printf("Unsub: %s\n", unsubUrl)
 		fmt.Println()
 	}
 }

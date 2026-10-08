@@ -9,7 +9,7 @@ import (
 )
 
 // finds the most likely unsub url ("" if none)
-func scanUnsubUrls(srv *gmail.Service, msg *gmail.Message) (string, error) {
+func scanUnsubUrls(msg *gmail.Message) (string, error) {
 	if msg.Raw != "" {
 		return "", errors.New("message has to be in format 'full', not 'raw'")
 	}

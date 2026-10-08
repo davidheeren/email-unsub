@@ -28,7 +28,12 @@ func main() {
 			log.Fatalf(err.Error())
 		}
 		return
+	} else if len(os.Args) > 1 && os.Args[1] == "test" {
+		runTestData()
+		return
 	}
+
+	log.Fatal("either run the download or test commands for now")
 
 	// get first 10 messages
 	resp, err := srv.Users.Messages.List(emailUser).MaxResults(10).Do()
@@ -43,7 +48,7 @@ func main() {
 			continue
 		}
 
-		unsubUrl, err := scanUnsubUrls(srv, msg)
+		unsubUrl, err := scanUnsubUrls(msg)
 		if err != nil {
 			fmt.Printf(err.Error())
 			continue
